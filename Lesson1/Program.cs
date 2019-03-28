@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace Lesson1
@@ -8,7 +9,10 @@ namespace Lesson1
     {
         static void Main(string[] args)
         {
-            AllocateAllMemory();
+            Console.WriteLine("Available memory: {0} MB",
+                new PerformanceCounter("Memory", "Available MBytes").NextValue());
+
+            AllocateMemory();
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -21,7 +25,7 @@ namespace Lesson1
             Console.ReadLine();
         }
 
-        public static void AllocateAllMemory()
+        public static void AllocateMemory()
         {
             using (var memoryStream = new MemoryStream())
             {
@@ -34,7 +38,7 @@ namespace Lesson1
                     }
                     catch (OutOfMemoryException)
                     {
-                        Console.WriteLine("Max heap size {0} bytes", GC.GetTotalMemory(false));
+                        Console.WriteLine("Memory stream allocation {0} bytes", GC.GetTotalMemory(false));
                         break;
                     }
                 }
@@ -56,7 +60,7 @@ namespace Lesson1
                 }
                 catch (OutOfMemoryException)
                 {
-                    Console.WriteLine("Max object size {0} bytes", GC.GetTotalMemory(false) - memoryBefore);
+                    Console.WriteLine("List allocation {0} bytes", GC.GetTotalMemory(false) - memoryBefore);
                     break;
                 }
             }
